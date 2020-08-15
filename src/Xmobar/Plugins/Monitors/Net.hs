@@ -167,7 +167,7 @@ printNet opts nd =
         (rx, rb, rvb, ripat) <- formatNet (rxIconPattern opts) r
         (tx, tb, tvb, tipat) <- formatNet (txIconPattern opts) t
         parseTemplate [d,rx,tx,rb,rvb,ripat,tb,tvb,tipat]
-    N _ NI -> return ""
+    N _ NI -> getConfigValue naString
     NA -> getConfigValue naString
 
 parseNet :: NetDevRef -> String -> IO NetDevRate
