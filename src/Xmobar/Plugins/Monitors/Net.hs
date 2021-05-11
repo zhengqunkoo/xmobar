@@ -20,6 +20,8 @@ module Xmobar.Plugins.Monitors.Net (
                       , startDynNet
                       ) where
 
+import Control.Monad.Reader
+import Data.IORef
 import Xmobar.Plugins.Monitors.Common
 
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
@@ -168,7 +170,15 @@ printNet opts nd =
         (tx, tb, tvb, tipat) <- formatNet (txIconPattern opts) t
         parseTemplate [d,rx,tx,rb,rvb,ripat,tb,tvb,tipat]
     N _ NI -> getConfigValue naString
+    N _ NI -> do
+      mods naString ("Net: " ++)
+      getConfigValue naString
     NA -> getConfigValue naString
+  where
+    mods :: Selector a -> (a -> a) -> Monitor ()
+    mods s m = do
+      v <- ask
+      io $ modifyIORef (s v) m
 
 parseNet :: NetDevRef -> String -> IO NetDevRate
 parseNet nref nd = do
